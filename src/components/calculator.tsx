@@ -35,7 +35,7 @@ const Calculator: React.FC = () => {
 
     if (!isNaN(parsedValue)) {
       // Calculate gratuity if included
-      const gratuity = includeGratuity ? parsedValue * 0.04 : 0;
+      const gratuity = includeGratuity ? parsedValue * 0.0491 : 0;
       const pfDeduction = parsedPfValue
         ? parsedValue * (parsedPfValue / 100)
         : 0;
@@ -99,7 +99,7 @@ const Calculator: React.FC = () => {
             checked={includeGratuity}
             onChange={handleGratuityChange}
           />
-          <label>Include Gratuity (4%)</label>
+          <label>Include Gratuity (4.91%)</label>
         </div>
         <div className="pf-container">
           <label>PF Contribution (%): </label>
