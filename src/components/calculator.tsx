@@ -9,16 +9,40 @@ const Calculator: React.FC = () => {
   const [monthlyInHandSalary, setMonthlyInHandSalary] = useState<number | null>(
     null
   );
+  const [includeGratuity, setIncludeGratuity] = useState<boolean>(false);
+  const [pfValue, setPfValue] = useState<number | string>("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
+  const handleGratuityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIncludeGratuity(event.target.checked);
+  };
+
+  const handlePfChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value);
+    if (!isNaN(value) && value >= 6 && value <= 12) {
+      setPfValue(value);
+    } else {
+      setPfValue("");
+    }
+  };
+
   const handleCalculate = () => {
     const parsedValue = parseFloat(inputValue.toString());
+    const parsedPfValue = parseFloat(pfValue.toString());
+
     if (!isNaN(parsedValue)) {
-      const tax = calculateTax(parsedValue);
-      const annualSalary = parsedValue - tax;
+      // Calculate gratuity if included
+      const gratuity = includeGratuity ? parsedValue * 0.04 : 0;
+      const pfDeduction = parsedPfValue
+        ? parsedValue * (parsedPfValue / 100)
+        : 0;
+
+      const taxableIncome = parsedValue - gratuity - pfDeduction;
+      const tax = calculateTax(taxableIncome);
+      const annualSalary = taxableIncome - tax;
       const monthlySalary = annualSalary / 12;
 
       setAnnualInHandSalary(annualSalary);
@@ -69,6 +93,26 @@ const Calculator: React.FC = () => {
           placeholder="Enter your annual salary"
           className="input-field"
         />
+        <div className="checkbox-container">
+          <input
+            type="checkbox"
+            checked={includeGratuity}
+            onChange={handleGratuityChange}
+          />
+          <label>Include Gratuity (4%)</label>
+        </div>
+        <div className="pf-container">
+          <label>PF Contribution (%): </label>
+          <input
+            type="number"
+            value={pfValue}
+            onChange={handlePfChange}
+            min="6"
+            max="12"
+            placeholder="Enter PF percentage (6-12)"
+            className="input-field"
+          />
+        </div>
         <button onClick={handleCalculate} className="calculate-button">
           Calculate
         </button>
